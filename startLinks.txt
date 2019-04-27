@@ -1,0 +1,9 @@
+https://abelsquidhead.com/index.php/2017/05/17/deploying-database-changes-in-your-continuous-delivery-pipeline-with-redgate-readyroll-and-visual-studio-team-services/
+
+https://docs.microsoft.com/en-us/sql/tools/sqlpackage?view=sql-server-2017
+
+https://documentation.red-gate.com/sca3/automating-database-changes/add-ons/visual-studio-team-services
+
+https://documentation.red-gate.com/sca3/automating-database-changes/add-ons/visual-studio-team-services
+
+https://www.youtube.com/watch?v=ZQzo26VNZq8
