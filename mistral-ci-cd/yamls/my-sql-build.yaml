@@ -1,0 +1,34 @@
+pool:
+  name: Hosted VS2017
+  demands: DotNetFramework
+
+steps:
+- task: PowerShell@1
+  displayName: 'PowerShell Script'
+  inputs:
+    scriptType: inlineScript
+    arguments: '$(build.sourcesdirectory)/for-deploy'
+    inlineScript: |
+     Param(
+        [string]$folderPath
+     )
+     
+     New-Item -ItemType directory -Path $folderPath
+
+- task: CopyFiles@2
+  displayName: 'Copy Files to: $(build.sourcesdirectory)/for-deploy'
+  inputs:
+    SourceFolder: '$(build.sourcesdirectory)'
+    Contents: '*.sql'
+    TargetFolder: '$(build.sourcesdirectory)/for-deploy'
+    CleanTargetFolder: true
+    OverWrite: true
+
+- task: CopyFiles@2
+  displayName: 'Copy Files to: $(Build.ArtifactStagingDirectory)'
+  inputs:
+    SourceFolder: '$(build.sourcesdirectory)/for-deploy'
+    TargetFolder: '$(Build.ArtifactStagingDirectory)'
+
+- task: PublishBuildArtifacts@1
+  displayName: 'Publish Artifact: drop'

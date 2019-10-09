@@ -1,0 +1,49 @@
+pool:
+  name: RatomirLocal
+steps:
+- powershell: |
+   $connConfigLoc = $Env:location
+   $connConfigLoc
+   try {
+       $doc = (Get-Content $connConfigLoc) -as [Xml]
+       $root = $doc.get_DocumentElement()
+       $root.PropertyGroup[0].DSP = "Microsoft.Data.Tools.Schema.Sql.SqlAzureV12DatabaseSchemaProvider"
+       $doc.Save($connConfigLoc)
+   
+       Write-Host 'Changing for target platform' -foregroundcolor green
+       Write-Host '--------------------------------------'
+   }
+   catch {
+       Write-Error -Message "Document Config can not be find. Please, try other location. Check format of xml document."
+   }
+  displayName: 'PowerShell Script'
+  env:
+    location: $(build.sourcesdirectory)\WWI\WWI.sqlproj
+
+- task: redgatesoftware.redgateDlmAutomationBuild.DlmAutomationBuildTask.RedgateSqlChangeAutomationBuild@3
+  displayName: 'Build SQL Change Automation Project databasepackage'
+  inputs:
+    sqlProj: WWI/WWI.sqlproj
+    packageName: databasepackage
+    tempServerTypeBuild: sqlServer
+    tempServerNameBuild: .
+    tempDatabaseNameBuild: DevServerShadow
+    usernameBuild: rsa
+    passwordBuild: Rato1234
+    publishSqlChangeAutomationArtifact: false
+    useSqlDoc: true
+    nugetPackageVersionUseBuildId: true
+
+- task: CopyFiles@2
+  displayName: 'Copy Files to: $(build.artifactstagingdirectory)/db'
+  inputs:
+    SourceFolder: '$(build.sourcesdirectory)'
+    Contents: '*.nupkg'
+    TargetFolder: '$(build.artifactstagingdirectory)/db'
+    CleanTargetFolder: true
+    OverWrite: true
+
+- task: PublishBuildArtifacts@1
+  displayName: 'Publish Artifact: artifact'
+  inputs:
+    ArtifactName: artifact
